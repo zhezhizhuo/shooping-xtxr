@@ -1,6 +1,8 @@
 # 默认忽略的文件
 /shelf/
 /workspace.xml
+.bat
+.iml
 # 数据源本地存储已忽略文件
 /dataSources/
 /dataSources.local.xml
