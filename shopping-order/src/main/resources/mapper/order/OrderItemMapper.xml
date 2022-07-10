@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.order.mapper.OrderItemMapper">
+
+    <resultMap type="OrderItem" id="OrderItemResult">
+        <result property="id"    column="id"    />
+        <result property="orderId"    column="order_id"    />
+        <result property="orderSn"    column="order_sn"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productQuantity"    column="product_quantity"    />
+    </resultMap>
+
+    <sql id="selectOrderItemVo">
+        select id, order_id, order_sn, product_id, product_quantity from order_item
+    </sql>
+
+    <select id="selectOrderItemList" parameterType="OrderItem" resultMap="OrderItemResult">
+        <include refid="selectOrderItemVo"/>
+        <where>
+            <if test="orderId != null "> and order_id = #{orderId}</if>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="productQuantity != null "> and product_quantity = #{productQuantity}</if>
+        </where>
+    </select>
+
+    <select id="selectOrderItemById" parameterType="Long" resultMap="OrderItemResult">
+        <include refid="selectOrderItemVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectOrderItemByOrderSn" resultMap="OrderItemResult" parameterType="string">
+        <include refid="selectOrderItemVo"/>
+            where  order_sn  =#{orderSn}
+    </select>
+
+    <insert id="insertOrderItem" parameterType="OrderItem" useGeneratedKeys="true" keyProperty="id">
+        insert into order_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">order_id,</if>
+            <if test="orderSn != null">order_sn,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="productQuantity != null">product_quantity,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderId != null">#{orderId},</if>
+            <if test="orderSn != null">#{orderSn},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="productQuantity != null">#{productQuantity},</if>
+         </trim>
+    </insert>
+
+    <update id="updateOrderItem" parameterType="OrderItem">
+        update order_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderId != null">order_id = #{orderId},</if>
+            <if test="orderSn != null">order_sn = #{orderSn},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="productQuantity != null">product_quantity = #{productQuantity},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteOrderItemById" parameterType="Long">
+        delete from order_item where id = #{id}
+    </delete>
+
+    <delete id="deleteOrderItemByIds" parameterType="String">
+        delete from order_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

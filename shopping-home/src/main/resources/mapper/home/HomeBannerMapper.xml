@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.home.mapper.HomeBannerMapper">
+
+    <resultMap type="HomeBanner" id="HomeBannerResult">
+        <result property="id" column="id"/>
+        <result property="pid" column="pid"/>
+        <result property="hrefurl" column="hrefUrl"/>
+        <result property="sort" column="sort"/>
+        <result property="imgurl" column="imgUrl"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectHomeBannerVo">
+        select id, pid, hrefUrl, sort, imgUrl, create_time
+        from home_banner
+    </sql>
+
+    <select id="selectHomeBannerList" parameterType="HomeBanner" resultMap="HomeBannerResult">
+        <include refid="selectHomeBannerVo"/>
+        order by sort
+    </select>
+
+    <select id="selectHomeBannerById" parameterType="Long" resultMap="HomeBannerResult">
+        <include refid="selectHomeBannerVo"/>
+        where id = #{id}
+    </select>
+    <select id="getIndexHomeData" resultType="com.qgj.common.core.domain.entity.IndexBean">
+        SELECT a.id AS 'userCount',( SELECT count(0) FROM sys_notice ) AS 'noticeCount', ( SELECT sum(o.total_amount) FROM master_order o ) AS 'priceSum', ( SELECT count(0) FROM master_order o ) AS 'orderCount'
+        FROM (SELECT count(0) AS 'id' FROM sys_user) a;
+    </select>
+
+    <insert id="insertHomeBanner" parameterType="HomeBanner" useGeneratedKeys="true" keyProperty="id">
+        insert into home_banner
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pid != null">pid,</if>
+            <if test="hrefurl != null">hrefUrl,</if>
+            <if test="sort != null">sort,</if>
+            <if test="imgurl != null">imgUrl,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pid != null">#{pid},</if>
+            <if test="hrefurl != null">#{hrefurl},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="imgurl != null">#{imgurl},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateHomeBanner" parameterType="HomeBanner">
+        update home_banner
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pid != null">pid = #{pid},</if>
+            <if test="hrefurl != null">hrefUrl = #{hrefurl},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="imgurl != null">imgUrl = #{imgurl},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHomeBannerById" parameterType="Long">
+        delete
+        from home_banner
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteHomeBannerByIds" parameterType="String">
+        delete from home_banner where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.category.mapper.CategoryBeanMapper">
+
+    <resultMap type="CategoryBean" id="CategoryBeanResult">
+        <result property="categoryId"    column="category_id"    />
+        <result property="categoryName"    column="category_name"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="sort"    column="sort"    />
+        <result property="pStatus"    column="p_status"    />
+        <result property="picture"    column="picture"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="total"    column="total"    />
+    </resultMap>
+
+    <sql id="selectCategoryBeanVo">
+        select category_id, category_name, parent_id, sort, p_status, picture, update_time, create_time, total from product_category
+    </sql>
+
+    <select id="selectCategoryBeanList" parameterType="CategoryBean" resultMap="CategoryBeanResult">
+        <include refid="selectCategoryBeanVo"/>
+        <where>
+            <if test="categoryId != null  and categoryId != ''"> and  category_id  = #{categoryId} </if>
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="pStatus != null "> and p_status = #{pStatus}</if>
+            <if test="picture != null  and picture != ''"> and picture = #{picture}</if>
+            <if test="createTime != null "> and create_time LIKE concat('%',  CONVERT(#{createTime},date), '%')</if>
+        </where>
+        order by sort
+    </select>
+
+    <select id="selectCategoryBeanByCategoryId" parameterType="Long" resultMap="CategoryBeanResult">
+        <include refid="selectCategoryBeanVo"/>
+        where category_id = #{categoryId}
+    </select>
+    <select id="selectCategoryHead" resultMap="CategoryBeanResult">
+        <include refid="selectCategoryBeanVo"/>
+        where p_status = 0
+        order by sort
+    </select>
+    <select id="selectCategoryBeanListByCategoryId"  parameterType="Long" resultMap="CategoryBeanResult">
+        <include refid="selectCategoryBeanVo"/>
+        where p_status = 0 and parent_id = #{id} or    category_id = #{id}
+        order by sort
+
+    </select>
+    <select id="getCharData" resultType="com.qgj.common.core.domain.entity.ChartData">
+        select c.category_name as 'name',count(1) as 'value' from product_info i  , product_category c where c.category_id = i.category_id and c.parent_id =0 GROUP BY c.category_id limit 0,5
+    </select>
+
+    <insert id="insertCategoryBean" parameterType="CategoryBean" useGeneratedKeys="true" keyProperty="categoryId">
+        insert into product_category
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="sort != null">sort,</if>
+            <if test="pStatus != null">p_status,</if>
+            <if test="picture != null">picture,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="total != null">total,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="pStatus != null">#{pStatus},</if>
+            <if test="picture != null">#{picture},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="total != null">#{total},</if>
+         </trim>
+    </insert>
+
+    <update id="updateCategoryBean" parameterType="CategoryBean">
+        update product_category
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="pStatus != null">p_status = #{pStatus},</if>
+            <if test="picture != null">picture = #{picture},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="total != null">total = #{total},</if>
+        </trim>
+        where category_id = #{categoryId}
+    </update>
+        <sql id="deleteCategory">
+            delete from product_category where
+        </sql>
+    <delete id="deleteCategoryBeanByCategoryId" parameterType="Long">
+        <include refid="deleteCategory"/>
+
+        category_id = #{categoryId}
+    </delete>
+
+    <delete id="deleteCategoryBeanByCategoryIds" parameterType="String">
+        <include refid="deleteCategory"/> category_id in
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteCategoryNodesByCid">
+        <include refid="deleteCategory"/>  product_category.parent_id in
+        <foreach item="categoryId" collection="array" open="(" separator="," close=")">
+            #{categoryId}
+        </foreach>
+    </delete>
+</mapper>

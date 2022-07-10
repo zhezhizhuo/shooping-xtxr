@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.order.mapper.MasterOrderMapper">
+
+    <resultMap type="MasterOrder" id="MasterOrderResult">
+        <result property="id"    column="id"    />
+        <result property="orderSn"    column="order_sn"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="memberUsername"    column="member_username"    />
+        <result property="totalAmount"    column="total_amount"    />
+        <result property="payAmount"    column="pay_amount"    />
+        <result property="payType"    column="pay_type"    />
+        <result property="status"    column="status"    />
+        <result property="receiverName"    column="receiver_name"    />
+        <result property="receiverPhone"    column="receiver_phone"    />
+        <result property="addresssId"    column="addresss_id"    />
+        <result property="note"    column="note"    />
+        <result property="confirmStatus"    column="confirm_status"    />
+        <result property="deleteStatus"    column="delete_status"    />
+        <result property="useIntegration"    column="use_integration"    />
+        <result property="paymentTime"    column="payment_time"    />
+        <result property="deliveryTime"    column="delivery_time"    />
+        <result property="receiveTime"    column="receive_time"    />
+    </resultMap>
+
+    <sql id="selectMasterOrderVo">
+        select id, order_sn, create_time, member_username, total_amount, pay_amount, pay_type, status, receiver_name, receiver_phone, addresss_id, note, confirm_status, delete_status, payment_time, delivery_time, receive_time from master_order
+    </sql>
+
+    <select id="selectMasterOrderList" parameterType="MasterOrder" resultMap="MasterOrderResult">
+        <include refid="selectMasterOrderVo"/>
+        <where>
+            <if test="orderSn != null  and orderSn != ''"> and order_sn = #{orderSn}</if>
+            <if test="memberUsername != null  and memberUsername != ''"> and member_username like concat('%', #{memberUsername}, '%')</if>
+            <if test="totalAmount != null "> and total_amount = #{totalAmount}</if>
+            <if test="payAmount != null "> and pay_amount = #{payAmount}</if>
+            <if test="payType != null "> and pay_type = #{payType}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="receiverName != null  and receiverName != ''"> and receiver_name like concat('%', #{receiverName}, '%')</if>
+            <if test="receiverPhone != null  and receiverPhone != ''"> and receiver_phone like concat('%', #{receiverPhone}, '%')</if>
+            <if test="addresssId != null "> and addresss_id like concat('%', #{addresssId}, '%')</if>
+            <if test="note != null  and note != ''"> and note = #{note}</if>
+            <if test="confirmStatus != null "> and confirm_status = #{confirmStatus}</if>
+            <if test="deleteStatus != null "> and delete_status = #{deleteStatus}</if>
+            <if test="useIntegration != null "> and use_integration = #{useIntegration}</if>
+            <if test="paymentTime != null "> and payment_time = #{paymentTime}</if>
+            <if test="deliveryTime != null "> and delivery_time = #{deliveryTime}</if>
+            <if test="receiveTime != null "> and receive_time = #{receiveTime}</if>
+        </where>
+    </select>
+
+    <select id="selectMasterOrderById" parameterType="Long" resultMap="MasterOrderResult">
+        <include refid="selectMasterOrderVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectOrderByOrderSn"  resultMap="MasterOrderResult" parameterType="string">
+        <include refid="selectMasterOrderVo"/>
+        where order_sn = #{orderSn}
+
+    </select>
+    <select id="selectUserOrder" resultType="com.qgj.common.core.domain.UserOrderEntity">
+        SELECT
+            r.order_sn as 'id',
+                r.create_time as 'createTime',
+                r.pay_type,
+            r.`status`,
+            r.confirm_status as 'confirmStatus',
+                r.pay_amount as 'totalAmount',
+                r.total_amount as 'payAmount',
+
+                CONCAT_WS(' ',a.province_name ,a.citiy_name,a.arean_name,a.address) as 'address' ,
+                (select sum(i.product_quantity) from order_item i where i.order_sn = r.order_sn) as 'total_num',
+                r.receiver_name as'receiverName' ,
+                r.receiver_phone as 'receiverPhone',
+                r.payment_time
+
+        FROM
+            master_order r,
+            user_address a
+        WHERE
+            r.delete_status = 0 and
+            r.member_username = #{userId}
+          AND r.addresss_id = a.id
+        <if test="status != null and status != ''">
+                and r.status   =   #{status}
+        </if>
+
+    </select>
+
+    <insert id="insertMasterOrder" parameterType="MasterOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into master_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="orderSn != null and orderSn != ''">order_sn,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="memberUsername != null and memberUsername != ''">member_username,</if>
+            <if test="totalAmount != null">total_amount,</if>
+            <if test="payAmount != null">pay_amount,</if>
+            <if test="payType != null">pay_type,</if>
+            <if test="status != null">status,</if>
+            <if test="receiverName != null and receiverName != ''">receiver_name,</if>
+            <if test="receiverPhone != null and receiverPhone != ''">receiver_phone,</if>
+            <if test="addresssId != null">addresss_id,</if>
+            <if test="note != null and note != ''">note,</if>
+            <if test="confirmStatus != null">confirm_status,</if>
+            <if test="deleteStatus != null">delete_status,</if>
+            <if test="useIntegration != null">use_integration,</if>
+            <if test="paymentTime != null">payment_time,</if>
+            <if test="deliveryTime != null">delivery_time,</if>
+            <if test="receiveTime != null">receive_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="orderSn != null and orderSn != ''">#{orderSn},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="memberUsername != null and memberUsername != ''">#{memberUsername},</if>
+            <if test="totalAmount != null">#{totalAmount},</if>
+            <if test="payAmount != null">#{payAmount},</if>
+            <if test="payType != null">#{payType},</if>
+            <if test="status != null">#{status},</if>
+            <if test="receiverName != null and receiverName != ''">#{receiverName},</if>
+            <if test="receiverPhone != null and receiverPhone != ''">#{receiverPhone},</if>
+            <if test="addresssId != null">#{addresssId},</if>
+            <if test="note != null and note != ''">#{note},</if>
+            <if test="confirmStatus != null">#{confirmStatus},</if>
+            <if test="deleteStatus != null">#{deleteStatus},</if>
+            <if test="useIntegration != null">#{useIntegration},</if>
+            <if test="paymentTime != null">#{paymentTime},</if>
+            <if test="deliveryTime != null">#{deliveryTime},</if>
+            <if test="receiveTime != null">#{receiveTime},</if>
+         </trim>
+    </insert>
+    <delete id="UserDelOrderMaster" parameterType="MasterOrder">
+        update master_order  set delete_status = #{deleteStatus}   where order_sn = #{orderSn}
+    </delete>
+    <update id="updateMasterOrder" parameterType="MasterOrder">
+        update master_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="orderSn != null and orderSn != ''">order_sn = #{orderSn},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="memberUsername != null and memberUsername != ''">member_username = #{memberUsername},</if>
+            <if test="totalAmount != null">total_amount = #{totalAmount},</if>
+            <if test="payAmount != null">pay_amount = #{payAmount},</if>
+            <if test="payType != null">pay_type = #{payType},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="receiverName != null and receiverName != ''">receiver_name = #{receiverName},</if>
+            <if test="receiverPhone != null and receiverPhone != ''">receiver_phone = #{receiverPhone},</if>
+            <if test="addresssId != null">addresss_id = #{addresssId},</if>
+            <if test="note != null and note != ''">note = #{note},</if>
+            <if test="confirmStatus != null">confirm_status = #{confirmStatus},</if>
+            <if test="deleteStatus != null">delete_status = #{deleteStatus},</if>
+            <if test="useIntegration != null">use_integration = #{useIntegration},</if>
+            <if test="paymentTime != null">payment_time = #{paymentTime},</if>
+            <if test="deliveryTime != null">delivery_time = #{deliveryTime},</if>
+            <if test="receiveTime != null">receive_time = #{receiveTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateOrderSetIsMenoru">
+        update master_order set  status =1 ,pay_type = 1 ,payment_time = NOW()      where order_sn = #{id}
+
+    </update>
+
+
+
+
+    <delete id="deleteMasterOrderByIds" parameterType="String">
+        delete from master_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

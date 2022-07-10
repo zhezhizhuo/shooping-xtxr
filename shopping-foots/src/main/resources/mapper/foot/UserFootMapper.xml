@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.foot.mapper.UserFootMapper">
+
+    <resultMap type="UserFoot" id="UserFootResult">
+        <result property="ftId"    column="ft_id"    />
+        <result property="pid"    column="pid"    />
+        <result property="userId"    column="user_id"    />
+        <result property="time"    column="time"    />
+        <result  property="userName" column="user_name" />
+        <result  property="productName" column="product_name" />
+        <result  property="picture" column="picture" />
+    </resultMap>
+
+    <sql id="selectUserFootVo">
+        select ft_id, pid, user_id, time from user_foot
+    </sql>
+
+    <select id="selectUserFootList" parameterType="UserFoot" resultMap="UserFootResult">
+        select f.ft_id,i.product_name,s.user_name,f.time,i.picture from user_foot f,product_info i,sys_user s where f.pid = i.product_id and f.user_id = s.user_id
+
+            <if test="productName != null "> and i.product_name like concat('%',#{productName},'%')</if>
+            <if test="userName != null "> and s.user_name  =   like concat('%',#{userName},'%')</if>
+            <if test="time != null "> and f.time LIKE concat('%',  CONVERT(#{time},date), '%')</if>
+
+
+        order by f.time desc
+    </select>
+
+    <select id="selectUserFootByFtId" parameterType="Long" resultMap="UserFootResult">
+        <include refid="selectUserFootVo"/>
+        where ft_id = #{ftId}
+    </select>
+    <select id="selectUserFootByUid" resultType="com.qgj.common.core.domain.Goods">
+        select    i.product_id AS 'id'  ,i.product_name as 'name', i.price as 'price' , i.descript as 'desc', i.picture	 from product_info i ,user_foot c where c.pid = i.product_id   and c.user_id =#{userId}
+        order by c.time desc
+</select>
+
+    <insert id="insertUserFoot" parameterType="UserFoot" useGeneratedKeys="true" keyProperty="ftId">
+        insert into user_foot
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="pid != null">pid,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="time != null">time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="pid != null">#{pid},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="time != null">#{time},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserFoot" parameterType="UserFoot">
+        update user_foot
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="pid != null">pid = #{pid},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="time != null">time = #{time},</if>
+        </trim>
+        where ft_id = #{ftId}
+    </update>
+    <delete id="deleteUserFootByFtId" parameterType="Long">
+        delete from user_foot where ft_id = #{ftId}
+    </delete>
+    <delete id="deleteUserFootByFtIds" parameterType="String">
+        delete from user_foot where ft_id in
+        <foreach item="ftId" collection="array" open="(" separator="," close=")">
+            #{ftId}
+        </foreach>
+    </delete>
+</mapper>

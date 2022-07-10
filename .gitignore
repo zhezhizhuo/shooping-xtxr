@@ -1,0 +1,15 @@
+# 项目排除路径
+/shopping-addresss/target/
+/shopping-category/target/
+/shopping-collects/target/
+/shopping-common/target/
+/shopping-foots/target/
+/shopping-framework/target/
+/shopping-generator/target/
+/shopping-home/target/
+/shopping-order/target/
+/shopping-paly/target/
+/shopping-product/target/
+/shopping-quartz/target/
+/shopping-system/target/
+/shopping-web/target/

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="shopping-system" />
+        <module name="shopping-foots" />
+        <module name="shopping-generator" />
+        <module name="shopping-category" />
+        <module name="shopping-addresss" />
+        <module name="shopping-comment" />
+        <module name="shopping-framework" />
+        <module name="shopping-web" />
+        <module name="shopping-common" />
+        <module name="shopping-quartz" />
+        <module name="shopping-order" />
+        <module name="shopping-product" />
+        <module name="shopping-collects" />
+        <module name="shopping-home" />
+        <module name="shopping-paly" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="8">
+      <module name="shopping-addresss" target="1.8" />
+      <module name="shopping-category" target="1.8" />
+      <module name="shopping-collects" target="1.8" />
+      <module name="shopping-comment" target="1.8" />
+      <module name="shopping-common" target="1.8" />
+      <module name="shopping-foots" target="1.8" />
+      <module name="shopping-framework" target="1.8" />
+      <module name="shopping-generator" target="1.8" />
+      <module name="shopping-home" target="1.8" />
+      <module name="shopping-order" target="1.8" />
+      <module name="shopping-paly" target="1.8" />
+      <module name="shopping-product" target="1.8" />
+      <module name="shopping-quartz" target="1.8" />
+      <module name="shopping-system" target="1.8" />
+      <module name="shopping-web" target="1.8" />
+      <module name="shopping-xtxr" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.product.mapper.ProductImgMapper">
+
+    <resultMap type="ProductImg" id="ProductImgResult">
+        <result property="id"    column="id"    />
+        <result property="productId"    column="product_id"    />
+        <result property="img"    column="img"    />
+        <result property="addTime"    column="add_time"    />
+    </resultMap>
+
+    <sql id="selectProductImgVo">
+        select id, product_id, img, add_time from product_img
+    </sql>
+
+    <select id="selectProductImgList" parameterType="ProductImg" resultMap="ProductImgResult">
+        <include refid="selectProductImgVo"/>
+        <where>
+            <if test="productId != null "> and product_id = #{productId}</if>
+            <if test="img != null  and img != ''"> and img = #{img}</if>
+            <if test="addTime != null "> and add_time = #{addTime}</if>
+        </where>
+    </select>
+
+    <select id="selectProductImgById" parameterType="Long" resultMap="ProductImgResult">
+        <include refid="selectProductImgVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectProductImgByPid"  parameterType="Long" resultMap="ProductImgResult">
+        <include refid="selectProductImgVo"/>
+        where product_id = #{id}
+    </select>
+
+    <insert id="insertProductImg" parameterType="ProductImg" useGeneratedKeys="true" keyProperty="id">
+        insert into product_img
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productId != null">product_id,</if>
+            <if test="img != null and img != ''">img,</if>
+            <if test="addTime != null">add_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productId != null">#{productId},</if>
+            <if test="img != null and img != ''">#{img},</if>
+            <if test="addTime != null">#{addTime},</if>
+         </trim>
+    </insert>
+
+
+    <update id="updateProductImg" parameterType="ProductImg">
+        update product_img
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="img != null and img != ''">img = #{img},</if>
+            <if test="addTime != null">add_time = #{addTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductImgById" parameterType="Long">
+        delete from product_img where id = #{id}
+    </delete>
+
+    <delete id="deleteProductImgByIds" parameterType="String">
+        delete from product_img where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteProductImgByProductId" parameterType="Long">
+        delete from product_img where product_id = #{id}
+    </delete>
+
+    <insert id="insertProductImgs"  parameterType="java.util.List">
+        insert into product_img    (product_id,img,add_time)          values
+        <foreach collection="list" item="item" index="index" separator=",">
+               (#{item.productId},#{item.img},now())
+        </foreach>
+
+    </insert>
+</mapper>

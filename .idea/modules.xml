@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/shopping-addresss/shopping-addresss.iml" filepath="$PROJECT_DIR$/shopping-addresss/shopping-addresss.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-category/shopping-category.iml" filepath="$PROJECT_DIR$/shopping-category/shopping-category.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-collects/shopping-collects.iml" filepath="$PROJECT_DIR$/shopping-collects/shopping-collects.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-comment/shopping-comment.iml" filepath="$PROJECT_DIR$/shopping-comment/shopping-comment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-common/shopping-common.iml" filepath="$PROJECT_DIR$/shopping-common/shopping-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-foots/shopping-foots.iml" filepath="$PROJECT_DIR$/shopping-foots/shopping-foots.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-framework/shopping-framework.iml" filepath="$PROJECT_DIR$/shopping-framework/shopping-framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-generator/shopping-generator.iml" filepath="$PROJECT_DIR$/shopping-generator/shopping-generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-home/shopping-home.iml" filepath="$PROJECT_DIR$/shopping-home/shopping-home.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-order/shopping-order.iml" filepath="$PROJECT_DIR$/shopping-order/shopping-order.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-paly/shopping-paly.iml" filepath="$PROJECT_DIR$/shopping-paly/shopping-paly.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-product/shopping-product.iml" filepath="$PROJECT_DIR$/shopping-product/shopping-product.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-quartz/shopping-quartz.iml" filepath="$PROJECT_DIR$/shopping-quartz/shopping-quartz.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-system/shopping-system.iml" filepath="$PROJECT_DIR$/shopping-system/shopping-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-web/shopping-web.iml" filepath="$PROJECT_DIR$/shopping-web/shopping-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shopping-xtxr.iml" filepath="$PROJECT_DIR$/shopping-xtxr.iml" />
+    </modules>
+  </component>
+</project>

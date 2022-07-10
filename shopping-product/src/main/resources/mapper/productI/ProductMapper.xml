@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qgj.product.mapper.ProductMapper">
+
+    <resultMap type="Product" id="ProductResult">
+        <result property="productId" column="product_id"/>
+        <result property="productName" column="product_name"/>
+        <result property="price" column="price"/>
+        <result property="pStatus" column="p_status"/>
+        <result property="descript" column="descript"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="picture" column="picture"/>
+    </resultMap>
+
+    <sql id="selectProductVo">
+        select product_id,
+               product_name,
+               price,
+               p_status,
+               descript,
+               category_name,
+               category_id,
+               create_time,
+               picture
+        from product_info
+    </sql>
+
+    <select id="selectProductList" parameterType="Product" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        <where>
+            <if test="categoryId != null  and categoryId != ''">and category_id = #{categoryId}</if>
+            <if test="productName != null  and productName != ''">and product_name like concat('%', #{productName},
+                '%')
+            </if>
+            <if test="price != null ">and price like concat('%', #{price}, '%')</if>
+            <if test="pStatus != null ">and p_status = #{pStatus}</if>
+        </where>
+    </select>
+    <select id="selectProductListNews" resultMap="ProductResult">
+        select  product_id ,product_name, price, descript, category_name, create_time, picture
+        from product_info
+        where p_status = 0
+        order by create_time desc limit 0,4
+    </select>
+    <select id="selectProductByProductId" parameterType="Long" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        where product_id = #{productId}
+    </select>
+    <select id="selectProductHotSort" resultType="com.qgj.common.core.domain.entity.ProductHotSort">
+        SELECT p.product_id AS 'productId', p.picture,
+               p.product_name AS 'productName', p.descript,
+               (SELECT count(c.col_id)
+                FROM user_collects c
+                WHERE c.pid = p.product_id) as 'collectsCount', ( SELECT count(f.pid) FROM user_foot f WHERE f.pid = p.product_id ) as 'footCount', ( SELECT count(me.p_id)
+                                                                                                                                                      FROM product_comment me
+                                                                                                                                                      WHERE p.product_id = me.p_id ) as 'commentCount',
+                    (SELECT count(c.col_id) FROM user_collects c WHERE c.pid = p.product_id) +
+                    (SELECT count(f.pid) FROM user_foot f WHERE f.pid = p.product_id)+(SELECT count(me.p_id)
+                                                                                       FROM product_comment me
+                                                                                       WHERE p.product_id = me.p_id)
+            as 'hot'
+        FROM product_info p
+        ORDER BY (SELECT count(c.col_id) FROM user_collects c WHERE c.pid = p.product_id) +
+                 (SELECT count(f.pid) FROM user_foot f WHERE f.pid = p.product_id) + (SELECT count(me.p_id)
+                                                                                      FROM product_comment me
+                                                                                      WHERE p.product_id = me.p_id) desc
+
+    </select>
+    <select id="selectProductListByCategoryId" parameterType="Long" resultMap="ProductResult">
+        <include refid="selectProductVo"/>
+        where p_status = 0 and category_id = #{id}
+    </select>
+    <select id="selectGoodInfoByProductId" parameterType="Long" resultType="com.qgj.common.core.domain.GoodsEntity">
+        select product_id as'id' , product_name as 'name', product_id as'spuCode', descript as 'desc', price,
+               if(price >= 35, price - 30.00, price) as 'oldPrice', picture,
+               (select COUNT(o.id) from order_item o where o.product_id = #{id}) as	'salesCount', (select COUNT(c.com_id) from product_comment c where c.p_id = #{id}) as	'commentCount', (select COUNT(s.col_id) from user_collects s where s.pid = #{id}) as	'collectCount'
+               ,
+                ((
+                     SELECT
+                         count( 0 )
+                     FROM
+                         product_comment c
+                     WHERE
+                         c.p_id = product_id
+                       AND c.score = 5
+                 ) / ( SELECT count( 0 ) FROM product_comment c WHERE c.p_id = product_id )) * 100 AS 'praisePercent'
+
+        from product_info
+        where p_status = 0
+          and product_id = #{id};
+    </select>
+    <select id="selectGoodsHotByDay" resultType="com.qgj.common.core.domain.Goods">
+
+        SELECT p.product_id AS 'id', p.picture,
+               p.product_name AS 'name', p.descript as'desc',p.price
+        FROM product_info p       where  p_status = 0
+        ORDER BY (SELECT count(c.col_id) FROM user_collects c WHERE c.pid = p.product_id) +
+                 (SELECT count(f.pid) FROM user_foot f WHERE f.pid = p.product_id) + (SELECT count(me.p_id)
+                                                                                      FROM product_comment me
+                                                                                      WHERE p.product_id = me.p_id) desc limit 0 ,4
+    </select>
+    <select id="selectGoodsListByCategoryId"   resultType="com.qgj.common.core.domain.Goods">
+
+        select  	p.product_id AS 'id',
+                p.picture,
+                  p.product_name AS 'name',
+                p.descript AS 'desc',
+                p.price
+        FROM
+            product_info p
+        where p.category_id = #{cid} and p_status = 0 limit 0,#{limit};
+    </select>
+    <select id="selectProductParent" resultType="com.qgj.common.core.domain.CategorysEntity">
+        select  a.category_id as 'id' ,a.category_name as 'name' ,  a.parent_id  as'parent' from product_category a ,product_info i where a.category_id = i.category_id  and i.product_id = #{id};
+
+    </select>
+    <select id="selectCategorParent" resultType="com.qgj.common.core.domain.CategorysEntity">
+        select  c.category_id as 'id',c.category_name as 'name' from product_category c where c.category_id = #{id};
+
+    </select>
+
+    <insert id="insertProduct" parameterType="Product" useGeneratedKeys="true" keyProperty="productId">
+        insert into product_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name,</if>
+            <if test="price != null">price,</if>
+            <if test="pStatus != null">p_status,</if>
+            <if test="descript != null and descript != ''">descript,</if>
+            <if test="categoryName != null and categoryName != ''">category_name,</if>
+            <if test="categoryId != null">category_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="picture != null and picture != ''">picture,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="productName != null and productName != ''">#{productName},</if>
+            <if test="price != null">#{price},</if>
+            <if test="pStatus != null">#{pStatus},</if>
+            <if test="descript != null and descript != ''">#{descript},</if>
+            <if test="categoryName != null and categoryName != ''">#{categoryName},</if>
+            <if test="categoryId != null">#{categoryId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="picture != null and picture != ''">#{picture},</if>
+        </trim>
+    </insert>
+
+    <update id="updateProduct" parameterType="Product">
+        update product_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="productName != null and productName != ''">product_name = #{productName},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="pStatus != null">p_status = #{pStatus},</if>
+            <if test="descript != null and descript != ''">descript = #{descript},</if>
+            <if test="categoryName != null and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="categoryId != null">category_id = #{categoryId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="picture != null and picture != ''">picture = #{picture},</if>
+        </trim>
+        where product_id = #{productId}
+    </update>
+
+    <delete id="deleteProductByProductId" parameterType="Long">
+        delete
+        from product_info
+        where product_id = #{productId}
+    </delete>
+
+    <delete id="deleteProductByProductIds" parameterType="String">
+        delete from product_info where product_id in
+        <foreach item="productId" collection="array" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+</mapper>
